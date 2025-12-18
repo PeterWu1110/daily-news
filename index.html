@@ -8,20 +8,14 @@
     <style>
         body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; padding: 20px; max-width: 1000px; margin: 0 auto; line-height: 1.6; }
         header { text-align: center; margin-bottom: 40px; padding: 20px; background: #2c3e50; color: white; border-radius: 12px; }
-        
-        /* 測驗區塊樣式 */
         .quiz-section { background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 40px; border-top: 5px solid #e67e22; }
         .quiz-title { color: #e67e22; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0; }
         .question-card { background: #f9f9f9; padding: 15px; margin-bottom: 20px; border-radius: 8px; border: 1px solid #eee; }
         .question-text { font-weight: bold; color: #2c3e50; font-size: 1.1em; }
         .options { margin: 10px 0; }
-        
-        /* 答案摺疊效果 */
         details { margin-top: 10px; cursor: pointer; background: #e8f6f3; padding: 10px; border-radius: 5px; }
         summary { font-weight: bold; color: #16a085; }
         .explanation { margin-top: 10px; color: #555; font-size: 0.95em; }
-
-        /* 新聞列表樣式 */
         .news-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
         .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .card h2 { color: #2980b9; margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; }
@@ -33,197 +27,167 @@
 <body>
     <header>
         <h1>📰 每日英語閱讀挑戰</h1>
-        <div>2025-12-18 20:20:01</div>
+        <div>2025-12-18 20:26:00</div>
     </header>
 
     <div class="quiz-section">
         <h2 class="quiz-title">🧠 Daily Reading Comprehension Quiz (AI Generated)</h2>
         <p>請閱讀下方新聞標題與摘要，回答下列問題：</p>
-        <p>AI 休息中，暫無法生成題目 (404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.)</p>
+        <p>AI 休息中 (404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}})</p>
     </div>
 
     <div class="news-grid">
-        
-            <div class="card">
-                <h2>BBC News</h2>
-                
+        <div class='card'><h2>BBC News</h2>
                 <div class="news-item">
                     <a href="https://www.bbc.com/news/articles/c9vjlj1ezpgo?at_medium=RSS&at_campaign=rss" target="_blank">Zelensky gives stark warning as EU leaders start crunch talks on Russia's frozen cash</a>
-                    <div style="font-size:0.85em; color:#666; margin-top:4px;">The leaders are deciding whether to loan tens of billions of euros in frozen Russian assets to fund Ukraine's military and economic needs....</div>
+                    <div style="font-size:0.85em; color:#666;">The leaders are deciding whether to loan tens of billions of euros in frozen Russian assets to fund Ukraine's military and economic needs....</div>
                 </div>
                 
                 <div class="news-item">
                     <a href="https://www.bbc.com/news/articles/c2epv08xwz7o?at_medium=RSS&at_campaign=rss" target="_blank">French 'Doctor Death' who poisoned patients jailed for life</a>
-                    <div style="font-size:0.85em; color:#666; margin-top:4px;">A court finds Frédéric Péchier guilty of contaminating infusion bags with substances that caused cardiac arrest or hemorrhaging....</div>
+                    <div style="font-size:0.85em; color:#666;">A court finds Frédéric Péchier guilty of contaminating infusion bags with substances that caused cardiac arrest or hemorrhaging....</div>
                 </div>
                 
                 <div class="news-item">
                     <a href="https://www.bbc.com/news/articles/cd0krr3jrkjo?at_medium=RSS&at_campaign=rss" target="_blank">Don't let Matilda's death fuel anger, say family of Bondi victim, 10, at funeral</a>
-                    <div style="font-size:0.85em; color:#666; margin-top:4px;">Lina Chernykh tells the BBC her niece Matilda was a joyous child who spread love everywhere she went....</div>
+                    <div style="font-size:0.85em; color:#666;">Lina Chernykh tells the BBC her niece Matilda was a joyous child who spread love everywhere she went....</div>
                 </div>
                 
                 <div class="news-item">
                     <a href="https://www.bbc.com/news/articles/cgmneem1e89o?at_medium=RSS&at_campaign=rss" target="_blank">Australian PM announces crackdown on hate speech after Bondi shooting</a>
-                    <div style="font-size:0.85em; color:#666; margin-top:4px;">Measures include fresh penalties for 'those who spread hate' as well as new powers to cancel or refuse visas....</div>
+                    <div style="font-size:0.85em; color:#666;">Measures include fresh penalties for 'those who spread hate' as well as new powers to cancel or refuse visas....</div>
                 </div>
                 
                 <div class="news-item">
                     <a href="https://www.bbc.com/news/articles/cx239pp7gl7o?at_medium=RSS&at_campaign=rss" target="_blank">Rob Reiner's family breaks silence as son Nick faces judge on murder charges</a>
-                    <div style="font-size:0.85em; color:#666; margin-top:4px;">Jake and Romy Reiner say they are in "unimaginable pain", as their brother faces first-degree murder charges over their parents' death....</div>
+                    <div style="font-size:0.85em; color:#666;">Jake and Romy Reiner say they are in "unimaginable pain", as their brother faces first-degree murder charges over their parents' death....</div>
                 </div>
-                
-            </div>
-            
-            <div class="card">
-                <h2>CNN</h2>
-                
+                </div><div class='card'><h2>CNN</h2>
                 <div class="news-item">
                     <a href="https://edition.cnn.com/webview/politics/live-news/trump-indictment-stormy-daniels-news-04-03-23/index.html" target="_blank">Trump pleads not guilty to 34 felony counts</a>
-                    <div style="font-size:0.85em; color:#666; margin-top:4px;">No summary available....</div>
+                    <div style="font-size:0.85em; color:#666;">...</div>
                 </div>
                 
                 <div class="news-item">
                     <a href="https://www.cnn.com/videos/politics/2023/04/05/maggie-haberman-donald-trump-speech-indictment-reaction-sot-cnntm-vpx.cnn" target="_blank">Haberman reveals why Trump attacked judge and his family in speech</a>
-                    <div style="font-size:0.85em; color:#666; margin-top:4px;">CNN political contributor Maggie Haberman explains the reasoning behind Donald Trump's attacks on the judge and his family during a speech at his Mar-a-Lago resort after he was arraigned on felony cha...</div>
+                    <div style="font-size:0.85em; color:#666;">CNN political contributor Maggie Haberman explains the reasoning behind Donald Trump's attacks on the judge and his family during a speech at his Mar-a-Lago resort after he was arraigned on felony cha...</div>
                 </div>
                 
                 <div class="news-item">
                     <a href="https://www.cnn.com/collections/intl-trump-040223/" target="_blank">What to know about the Trump indictment on the eve of his court appearance</a>
-                    <div style="font-size:0.85em; color:#666; margin-top:4px;">No summary available....</div>
+                    <div style="font-size:0.85em; color:#666;">...</div>
                 </div>
                 
                 <div class="news-item">
                     <a href="https://cnn.it/411KYN7" target="_blank">READ: Trump indictment related to hush money payment</a>
-                    <div style="font-size:0.85em; color:#666; margin-top:4px;">No summary available....</div>
+                    <div style="font-size:0.85em; color:#666;">...</div>
                 </div>
                 
                 <div class="news-item">
                     <a href="https://edition.cnn.com/webview/europe/live-news/russia-ukraine-war-news-04-03-23/index.html" target="_blank">Russian authorities detain suspect over St. Petersburg cafe blast</a>
-                    <div style="font-size:0.85em; color:#666; margin-top:4px;">No summary available....</div>
+                    <div style="font-size:0.85em; color:#666;">...</div>
+                </div>
+                </div><div class='card'><h2>FOX News</h2>
+                <div class="news-item">
+                    <a href="https://www.foxnews.com/politics/trump-admin-announces-11b-taiwan-arms-sales-deal" target="_blank">Trump admin announces $11B Taiwan arms sales deal</a>
+                    <div style="font-size:0.85em; color:#666;">The U.S. announced a record $11 billion arms deal with Taiwan, surpassing previous sales as China warns of war risks in Taiwan Strait tensions....</div>
                 </div>
                 
-            </div>
-            
-            <div class="card">
-                <h2>FOX News</h2>
+                <div class="news-item">
+                    <a href="https://www.foxnews.com/us/fox-news-antisemitism-exposed-newsletter-australia-pays-price-coddling-extremists" target="_blank">Fox News ‘Antisemitism Exposed’ Newsletter: Australia pays price for coddling extremists</a>
+                    <div style="font-size:0.85em; color:#666;">Fox News&apos; &quot;Antisemitism Exposed&quot; newsletter brings you stories on the rising anti-Jewish prejudice across the U.S. and the world....</div>
+                </div>
                 
                 <div class="news-item">
                     <a href="https://www.foxnews.com/sports/espn-star-regrets-diego-pavia-vote-heisman-trophy-after-vandy-stars-explicit-outburst" target="_blank">ESPN star regrets Diego Pavia vote for Heisman Trophy after Vandy star's explicit outburst</a>
-                    <div style="font-size:0.85em; color:#666; margin-top:4px;">ESPN star Rece Davis expressed his regret voting for Vanderbilt quarterback Diego Pavia to win the Heisman Trophy after the star player&apos;s explicit outburst toward voters....</div>
+                    <div style="font-size:0.85em; color:#666;">ESPN star Rece Davis expressed his regret voting for Vanderbilt quarterback Diego Pavia to win the Heisman Trophy after the star player&apos;s explicit outburst toward voters....</div>
                 </div>
                 
                 <div class="news-item">
                     <a href="https://www.foxnews.com/media/massachusetts-drops-controversial-gender-ideology-mandate-licensing-foster-care-parents" target="_blank">Massachusetts drops controversial gender ideology mandate for licensing foster care parents</a>
-                    <div style="font-size:0.85em; color:#666; margin-top:4px;">Massachusetts dropped its gender identity mandate for foster care parents after Alliance Defending Freedom posed a legal challenge and federal regulators gave a constitutional warning....</div>
+                    <div style="font-size:0.85em; color:#666;">Massachusetts dropped its gender identity mandate for foster care parents after Alliance Defending Freedom posed a legal challenge and federal regulators gave a constitutional warning....</div>
                 </div>
                 
                 <div class="news-item">
                     <a href="https://www.foxnews.com/health/simple-lifestyle-changes-could-slash-heart-attack-risk-millions-scientists-report" target="_blank">Simple lifestyle changes could slash heart attack risk for millions, scientists report</a>
-                    <div style="font-size:0.85em; color:#666; margin-top:4px;">New study reveals prediabetes remission can cut heart disease death risk by 58% through targeted lifestyle changes that keep blood sugar levels within a normal range....</div>
+                    <div style="font-size:0.85em; color:#666;">New study reveals prediabetes remission can cut heart disease death risk by 58% through targeted lifestyle changes that keep blood sugar levels within a normal range....</div>
                 </div>
-                
-                <div class="news-item">
-                    <a href="https://www.foxnews.com/entertainment/andrew-dodges-police-probe-king-charles-epstein-nightmare-isnt-over-experts" target="_blank">Andrew dodges police probe but King Charles’ Epstein ‘nightmare’ isn’t over: experts</a>
-                    <div style="font-size:0.85em; color:#666; margin-top:4px;">Prince William and Kate Middleton, the Princess and Princess of Wales, distance themselves from ex-Prince Andrew as royal experts predict more damaging Epstein evidence will emerge....</div>
-                </div>
-                
-                <div class="news-item">
-                    <a href="https://www.foxnews.com/us/who-nuno-loureiro-mit-professor-gunned-down-apartment-near-university" target="_blank">Who was Nuno Loureiro? MIT professor gunned down in apartment near university</a>
-                    <div style="font-size:0.85em; color:#666; margin-top:4px;">MIT professor and nuclear physicist Nuno Loureiro was shot and killed at his home this week. The 47-year-old directed the university&apos;s fusion center....</div>
-                </div>
-                
-            </div>
-            
-            <div class="card">
-                <h2>Wall Street Journal</h2>
-                
+                </div><div class='card'><h2>Wall Street Journal</h2>
                 <div class="news-item">
                     <a href="https://www.wsj.com/articles/palestinians-flock-back-to-northern-gaza-on-foot-after-hostage-release-breakthrough-3f60e2db" target="_blank">Palestinians Stream Back to Northern Gaza on Foot</a>
-                    <div style="font-size:0.85em; color:#666; margin-top:4px;">Israel allowed displaced Gazans to begin crossing a military zone that bisects the enclave after a deadlock over hostage releases was broken....</div>
+                    <div style="font-size:0.85em; color:#666;">Israel allowed displaced Gazans to begin crossing a military zone that bisects the enclave after a deadlock over hostage releases was broken....</div>
                 </div>
                 
                 <div class="news-item">
                     <a href="https://www.wsj.com/articles/even-chinas-property-stalwart-isnt-immune-from-the-crisis-19799863" target="_blank">Leading China Property Developer Reports Huge loss, in Sign of Widening Real-Estate Woes</a>
-                    <div style="font-size:0.85em; color:#666; margin-top:4px;">Troubles at Vanke raise questions about the continued spread of the property crisis and whether the Chinese state will step in....</div>
+                    <div style="font-size:0.85em; color:#666;">Troubles at Vanke raise questions about the continued spread of the property crisis and whether the Chinese state will step in....</div>
                 </div>
                 
                 <div class="news-item">
                     <a href="https://www.wsj.com/articles/freed-israeli-hostages-still-had-shrapnel-in-their-bodies-from-oct-7-attack-3de8cd1e" target="_blank">Freed Israeli Hostages Still Had Shrapnel in Their Bodies From Oct. 7 Attack</a>
-                    <div style="font-size:0.85em; color:#666; margin-top:4px;">Some of the women were held alone for extended periods and spent eight months in tunnels, an Israeli medical official said....</div>
+                    <div style="font-size:0.85em; color:#666;">Some of the women were held alone for extended periods and spent eight months in tunnels, an Israeli medical official said....</div>
                 </div>
                 
                 <div class="news-item">
                     <a href="https://www.wsj.com/articles/suspected-sabotage-of-deep-sea-cable-triggers-first-nato-led-response-337119ba" target="_blank">Suspected Sabotage of Deep-Sea Cable Triggers First NATO-Led Response</a>
-                    <div style="font-size:0.85em; color:#666; margin-top:4px;">The alliance mounted its first coordinated response to a suspected sabotage campaign against critical infrastructure after another cable was severed in the Baltic Sea....</div>
+                    <div style="font-size:0.85em; color:#666;">The alliance mounted its first coordinated response to a suspected sabotage campaign against critical infrastructure after another cable was severed in the Baltic Sea....</div>
                 </div>
                 
                 <div class="news-item">
                     <a href="https://www.wsj.com/articles/rwanda-backed-rebels-enter-congo-safe-haven-city-aid-hub-09fdccb8" target="_blank">Rwanda-Backed Rebels Enter Congo's Safe-Haven City</a>
-                    <div style="font-size:0.85em; color:#666; margin-top:4px;">Residents of Goma reported gunfire and shelling after rebels overran Congolese troops. U.N. officials estimated that more than one million displaced people were now inside the city....</div>
+                    <div style="font-size:0.85em; color:#666;">Residents of Goma reported gunfire and shelling after rebels overran Congolese troops. U.N. officials estimated that more than one million displaced people were now inside the city....</div>
+                </div>
+                </div><div class='card'><h2>Al Jazeera</h2>
+                <div class="news-item">
+                    <a href="https://www.aljazeera.com/sports/2025/12/18/indias-mohun-bagan-banned-by-afc-for-refusal-to-play-football-game-in-iran?traffic_source=rss" target="_blank">India’s Mohun Bagan banned by AFC for refusal to play football game in Iran</a>
+                    <div style="font-size:0.85em; color:#666;">AFC have sanctioned India&#039;s Mohun Bagan for refusing to visit Iran for their Asian Champions League match in September....</div>
                 </div>
                 
-            </div>
-            
-            <div class="card">
-                <h2>Al Jazeera</h2>
+                <div class="news-item">
+                    <a href="https://www.aljazeera.com/news/2025/12/18/uproar-in-india-over-bihar-chief-minister-pulling-down-muslim-womans-hijab?traffic_source=rss" target="_blank">Uproar in India over Bihar chief minister pulling down Muslim woman’s hijab</a>
+                    <div style="font-size:0.85em; color:#666;">Nitish Kumar, a BJP ally, removes the veil of a female doctor during a government event, triggering widespread outrage....</div>
+                </div>
                 
                 <div class="news-item">
                     <a href="https://www.aljazeera.com/video/newsfeed/2025/12/18/these-arabic-words-are-commonly-used-in-everyday-english?traffic_source=rss" target="_blank">These Arabic words are commonly used in everyday English</a>
-                    <div style="font-size:0.85em; color:#666; margin-top:4px;">Hundreds of Arabic words are used in the English language today, and there are surprising stories behind them....</div>
+                    <div style="font-size:0.85em; color:#666;">Hundreds of Arabic words are used in the English language today, and there are surprising stories behind them....</div>
                 </div>
                 
                 <div class="news-item">
                     <a href="https://www.aljazeera.com/news/2025/12/18/does-the-us-have-any-real-claim-on-venezuelan-oil-as-stephen-miller-says?traffic_source=rss" target="_blank">Does the US have any real claim on Venezuelan oil as Stephen Miller says?</a>
-                    <div style="font-size:0.85em; color:#666; margin-top:4px;">US companies developed Venezuelan oil fields until the country nationalised its oil reserves in the 1970s....</div>
+                    <div style="font-size:0.85em; color:#666;">US companies developed Venezuelan oil fields until the country nationalised its oil reserves in the 1970s....</div>
                 </div>
                 
                 <div class="news-item">
                     <a href="https://www.aljazeera.com/video/on-the-record/2025/12/18/how-to-keep-britains-far-right-out-of-power-mp-shockat-adam?traffic_source=rss" target="_blank">How to keep Britain’s far-right out of power: MP Shockat Adam</a>
-                    <div style="font-size:0.85em; color:#666; margin-top:4px;">How to keep Britain&#039;s far-right out of power: MP Shockat Adam...</div>
+                    <div style="font-size:0.85em; color:#666;">How to keep Britain&#039;s far-right out of power: MP Shockat Adam...</div>
                 </div>
-                
-                <div class="news-item">
-                    <a href="https://www.aljazeera.com/sports/2025/12/18/former-football-star-mario-pineida-killed-as-violence-escalates-in-ecuador-barcelona-fluminense?traffic_source=rss" target="_blank">Former football star Mario Pineida killed as violence escalates in Ecuador</a>
-                    <div style="font-size:0.85em; color:#666; margin-top:4px;">Former Fluminense star Mario Pineida killed in attack as Ecuadorian president responds to most violent year in history....</div>
-                </div>
-                
-                <div class="news-item">
-                    <a href="https://www.aljazeera.com/video/counting-the-cost/2025/12/18/whats-next-for-the-global-economy-in-2026?traffic_source=rss" target="_blank">What’s next for the global economy in 2026?</a>
-                    <div style="font-size:0.85em; color:#666; margin-top:4px;">2025 was the year of tariffs and a global shift in economic power....</div>
-                </div>
-                
-            </div>
-            
-            <div class="card">
-                <h2>ABC News</h2>
-                
+                </div><div class='card'><h2>ABC News</h2>
                 <div class="news-item">
                     <a href="https://abcnews.go.com/Politics/trump-address-nation-1st-year-office-2026-agenda/story?id=128498252" target="_blank">Trump hits Biden and old grievances, touts 'our country is back' in address</a>
-                    <div style="font-size:0.85em; color:#666; margin-top:4px;">President Donald Trump addressed the nation on Wednesday night to tout his first year in office and preview his 2026 agenda....</div>
+                    <div style="font-size:0.85em; color:#666;">President Donald Trump addressed the nation on Wednesday night to tout his first year in office and preview his 2026 agenda....</div>
                 </div>
                 
                 <div class="news-item">
                     <a href="https://abcnews.go.com/Live/video/abcnews-live-41463246" target="_blank">LIVE:  ABC News Live</a>
-                    <div style="font-size:0.85em; color:#666; margin-top:4px;">24/7 coverage of breaking news and live events...</div>
+                    <div style="font-size:0.85em; color:#666;">24/7 coverage of breaking news and live events...</div>
                 </div>
                 
                 <div class="news-item">
                     <a href="https://abcnews.go.com/Business/inflation-report-released-thursday-expected-show-slight-uptick/story?id=128480220" target="_blank">Inflation report to be released Thursday expected to show slight uptick in November</a>
-                    <div style="font-size:0.85em; color:#666; margin-top:4px;">The inflation rate stands a percentage point higher than the Fed's target of 2%....</div>
+                    <div style="font-size:0.85em; color:#666;">The inflation rate stands a percentage point higher than the Fed's target of 2%....</div>
                 </div>
                 
                 <div class="news-item">
                     <a href="https://abcnews.go.com/International/russia-preparing-year-war-despite-peace-talks-zelenskyy/story?id=128511257" target="_blank">Russia preparing for another year of war despite peace talks, Zelenskyy says</a>
-                    <div style="font-size:0.85em; color:#666; margin-top:4px;">Ukrainian President Volodymyr Zelenskyy said in an address on Wednesday that Russia is preparing "the coming year as a year of war," despite ongoing peace talks....</div>
+                    <div style="font-size:0.85em; color:#666;">Ukrainian President Volodymyr Zelenskyy said in an address on Wednesday that Russia is preparing "the coming year as a year of war," despite ongoing peace talks....</div>
                 </div>
                 
                 <div class="news-item">
                     <a href="https://abcnews.go.com/Health/video/worlds-1st-gene-edited-baby-takes-1st-steps-128512940" target="_blank">WATCH:  World's 1st gene-edited baby takes 1st steps</a>
-                    <div style="font-size:0.85em; color:#666; margin-top:4px;">KJ Muldoon received the first-of-its-kind gene therapy for a potentially fatal disease and is now marking major developmental milestones....</div>
+                    <div style="font-size:0.85em; color:#666;">KJ Muldoon received the first-of-its-kind gene therapy for a potentially fatal disease and is now marking major developmental milestones....</div>
                 </div>
-                
-            </div>
-            
+                </div>
     </div>
 </body>
 </html>
