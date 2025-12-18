@@ -26,6 +26,8 @@ jobs:
         pip install -r requirements.txt
 
     - name: Run script
+      env:
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}  # 這行最重要！把鑰匙傳進程式
       run: python main.py
 
     - name: Commit and push changes
