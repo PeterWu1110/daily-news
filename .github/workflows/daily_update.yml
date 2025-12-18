@@ -21,9 +21,10 @@ jobs:
       with:
         python-version: '3.9'
 
-    - name: Install dependencies
+   - name: Install dependencies
       run: |
-        pip install -r requirements.txt
+        pip install feedparser pytz
+        pip install --upgrade google-generativeai
 
     - name: Run script
       env:
