@@ -1,8 +1,14 @@
 import feedparser
 import datetime
 import pytz
+import os
+import random
+import google.generativeai as genai
 
-# 1. 定義新聞來源 (你可以隨時增加或刪除這裡的連結)
+# =================設定區=================
+# 從 GitHub Secrets 讀取 API Key
+GENAI_API_KEY = os.environ.get("GEMINI_API_KEY")
+
 rss_urls = {
     "BBC News": "http://feeds.bbci.co.uk/news/world/rss.xml",
     "CNN": "http://rss.cnn.com/rss/edition.rss",
@@ -12,96 +18,160 @@ rss_urls = {
     "ABC News": "https://abcnews.go.com/abcnews/topstories"
 }
 
-# 2. 定義網頁的外觀 (HTML 模板)
-# 這裡面的 CSS 決定了網頁長什麼樣子
+# =================HTML 模板=================
 html_template = """
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>每日國際新聞晨報</title>
+    <title>每日英語新聞與閱讀測驗</title>
     <style>
-        body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4; padding: 20px; margin: 0; }}
-        .container {{ max-width: 1200px; margin: 0 auto; }}
-        header {{ background-color: #333; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }}
-        .update-time {{ color: #ccc; font-size: 0.9em; margin-top: 5px; }}
-        .grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; padding: 20px; background: white; border-radius: 0 0 8px 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }}
-        .card {{ border: 1px solid #eee; padding: 15px; border-radius: 8px; }}
-        .card h2 {{ color: #d32f2f; margin-top: 0; border-bottom: 2px solid #f4f4f4; padding-bottom: 10px; font-size: 1.2em; }}
-        .news-list {{ list-style: none; padding: 0; }}
-        .news-item {{ margin-bottom: 12px; }}
-        .news-item a {{ text-decoration: none; color: #333; font-weight: 500; display: block; }}
-        .news-item a:hover {{ color: #0056b3; text-decoration: underline; }}
-        .date {{ font-size: 0.8em; color: #888; }}
+        body {{ font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; padding: 20px; max-width: 1000px; margin: 0 auto; line-height: 1.6; }}
+        header {{ text-align: center; margin-bottom: 40px; padding: 20px; background: #2c3e50; color: white; border-radius: 12px; }}
+        
+        /* 測驗區塊樣式 */
+        .quiz-section {{ background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 40px; border-top: 5px solid #e67e22; }}
+        .quiz-title {{ color: #e67e22; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0; }}
+        .question-card {{ background: #f9f9f9; padding: 15px; margin-bottom: 20px; border-radius: 8px; border: 1px solid #eee; }}
+        .question-text {{ font-weight: bold; color: #2c3e50; font-size: 1.1em; }}
+        .options {{ margin: 10px 0; }}
+        
+        /* 答案摺疊效果 */
+        details {{ margin-top: 10px; cursor: pointer; background: #e8f6f3; padding: 10px; border-radius: 5px; }}
+        summary {{ font-weight: bold; color: #16a085; }}
+        .explanation {{ margin-top: 10px; color: #555; font-size: 0.95em; }}
+
+        /* 新聞列表樣式 */
+        .news-grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }}
+        .card {{ background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }}
+        .card h2 {{ color: #2980b9; margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; }}
+        .news-item {{ margin-bottom: 15px; border-bottom: 1px dashed #eee; padding-bottom: 10px; }}
+        .news-item a {{ text-decoration: none; color: #34495e; font-weight: 600; }}
+        .news-item a:hover {{ color: #e67e22; }}
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🌍 每日國際新聞彙整</h1>
-            <div class="update-time">最後更新 (台灣時間): {update_time}</div>
-        </header>
-        <div class="grid">
-            {content}
-        </div>
+    <header>
+        <h1>📰 每日英語閱讀挑戰</h1>
+        <div>{update_time}</div>
+    </header>
+
+    <div class="quiz-section">
+        <h2 class="quiz-title">🧠 Daily Reading Comprehension Quiz (AI Generated)</h2>
+        <p>請閱讀下方新聞標題與摘要，回答下列問題：</p>
+        {quiz_content}
+    </div>
+
+    <div class="news-grid">
+        {news_content}
     </div>
 </body>
 </html>
 """
 
+def generate_quiz_with_gemini(news_summaries):
+    if not GENAI_API_KEY:
+        return "<p>⚠️ 請先設定 GitHub Secret (GEMINI_API_KEY) 才能啟用測驗功能。</p>"
+
+    try:
+        genai.configure(api_key=GENAI_API_KEY)
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        
+        # 建立給 AI 的提示詞 (Prompt)
+        prompt = f"""
+        You are an English teacher. Based on the following news summaries, create 5 multiple-choice reading comprehension questions.
+        
+        NEWS DATA:
+        {news_summaries}
+        
+        REQUIREMENTS:
+        1. Create 5 questions (1 question per news item if possible).
+        2. Format the output as raw HTML code.
+        3. Use this specific HTML structure for each question:
+           <div class="question-card">
+               <div class="question-text">Question: [Insert Question Here]</div>
+               <div class="options">
+                   A) [Option A]<br>
+                   B) [Option B]<br>
+                   C) [Option C]<br>
+                   D) [Option D]
+               </div>
+               <details>
+                   <summary>Check Answer</summary>
+                   <div class="explanation">
+                       <strong>Correct Answer: [Correct Option]</strong><br>
+                       Explanation: [Explain why based on the text]
+                   </div>
+               </details>
+           </div>
+        4. Do NOT include ```html markdown tags. Just return the pure HTML string.
+        """
+        
+        response = model.generate_content(prompt)
+        return response.text.replace("```html", "").replace("```", "")
+        
+    except Exception as e:
+        print(f"AI 生成失敗: {e}")
+        return f"<p>AI 休息中，暫無法生成題目 ({str(e)})</p>"
+
 def fetch_news():
     cards_html = ""
-    # 設定台灣時區
+    all_news_for_quiz = [] # 收集新聞給 AI 用
+    
     tw_tz = pytz.timezone('Asia/Taipei')
-    current_time = datetime.datetime.now(tw_tz).strftime("%Y-%m-%d %H:%M:%S")
+    now = datetime.datetime.now(tw_tz).strftime("%Y-%m-%d %H:%M:%S")
 
-    # 開始一個一個抓取新聞
-    for source_name, url in rss_urls.items():
-        print(f"正在抓取: {source_name}...")
-        
+    for source, url in rss_urls.items():
         try:
-            # 使用 feedparser 下載並分析 RSS
             feed = feedparser.parse(url)
+            news_items_html = ""
             
-            news_items_html = "<ul class='news-list'>"
-            
-            # 只取前 5 則新聞
+            # 取前 5 則
             for entry in feed.entries[:5]:
                 title = entry.title
                 link = entry.link
-                # 嘗試抓取發布時間，如果沒有就留空
-                pub_date = entry.published if 'published' in entry else ""
+                # 取得摘要，有些 feed 用 summary，有些用 description
+                summary = entry.summary if 'summary' in entry else entry.description if 'description' in entry else "No summary available."
                 
-                # 組合每一則新聞的 HTML
+                # 清理一下摘要的 HTML 標籤 (簡單處理)
+                clean_summary = summary.replace('<', '[').replace('>', ']')[:200] + "..."
+                
+                # 收集起來給 AI
+                all_news_for_quiz.append(f"Source: {source}\nTitle: {title}\nSummary: {clean_summary}\n")
+                
                 news_items_html += f"""
-                <li class="news-item">
-                    <a href="{link}" target="_blank">➤ {title}</a>
-                    <span class="date">{pub_date}</span>
-                </li>
+                <div class="news-item">
+                    <a href="{link}" target="_blank">{title}</a>
+                    <div style="font-size:0.85em; color:#666; margin-top:4px;">{clean_summary}</div>
+                </div>
                 """
-            news_items_html += "</ul>"
-
-            # 將這家媒體的內容包成一張卡片
+            
             cards_html += f"""
             <div class="card">
-                <h2>{source_name}</h2>
+                <h2>{source}</h2>
                 {news_items_html}
             </div>
             """
-            
         except Exception as e:
-            print(f"抓取 {source_name} 時發生錯誤: {e}")
-            cards_html += f"<div class='card'><h2>{source_name}</h2><p>暫時無法讀取內容。</p></div>"
+            print(f"Error {source}: {e}")
 
-    # 將抓到的內容填入模板
-    final_html = html_template.format(update_time=current_time, content=cards_html)
+    # --- 呼叫 AI 生成測驗 ---
+    print("正在請求 Gemini AI 出題...")
+    # 隨機挑選 5-8 則新聞丟給 AI，避免 token 太多或題目太偏
+    selected_news = random.sample(all_news_for_quiz, min(len(all_news_for_quiz), 8))
+    quiz_html = generate_quiz_with_gemini("\n---\n".join(selected_news))
+
+    # --- 組合最終網頁 ---
+    final_html = html_template.format(
+        update_time=now, 
+        quiz_content=quiz_html, 
+        news_content=cards_html
+    )
     
-    # 存檔為 index.html (這就是我們最後看到的網頁)
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(final_html)
-        
-    print("成功！index.html 已生成。")
+    print("完成！")
 
 if __name__ == "__main__":
     fetch_news()
