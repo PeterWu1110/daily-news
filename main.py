@@ -76,7 +76,7 @@ def generate_quiz_with_gemini(news_summaries):
 
     try:
         genai.configure(api_key=GENAI_API_KEY)
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        model = genai.GenerativeModel('gemini-pro')
         
         # 建立給 AI 的提示詞 (Prompt)
         prompt = f"""
@@ -175,3 +175,4 @@ def fetch_news():
 
 if __name__ == "__main__":
     fetch_news()
+
