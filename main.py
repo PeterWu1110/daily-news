@@ -42,6 +42,7 @@ html_template = """
         .news-item {{ margin-bottom: 15px; border-bottom: 1px dashed #eee; padding-bottom: 10px; }}
         .news-item a {{ text-decoration: none; color: #34495e; font-weight: 600; }}
         .news-item a:hover {{ color: #e67e22; }}
+        .debug-info {{ font-size: 0.8em; color: #999; margin-top: 10px; }}
     </style>
 </head>
 <body>
@@ -70,6 +71,16 @@ def generate_quiz_with_gemini(news_summaries):
     try:
         client = genai.Client(api_key=GENAI_API_KEY)
         
+        # --- 偵錯區塊：列出所有可用模型 (會顯示在 GitHub Actions 的 Log 中) ---
+        print("=== DEBUG: Checking Available Models ===")
+        try:
+            for m in client.models.list():
+                print(f"Available model: {m.name}")
+        except Exception as e:
+            print(f"List models failed: {e}")
+        print("=== End DEBUG ===")
+        # -----------------------------------------------------------
+
         prompt = f"""
         You are an English teacher. Based on the following news summaries, create 5 multiple-choice reading comprehension questions.
         
@@ -88,26 +99,36 @@ def generate_quiz_with_gemini(news_summaries):
         4. No markdown tags.
         """
         
-        # === 雙重保險機制 ===
-        try:
-            print("嘗試使用 gemini-1.5-flash...")
-            response = client.models.generate_content(
-                model="gemini-1.5-flash",
-                contents=prompt
-            )
-        except Exception as e:
-            print(f"Flash 模型失敗，切換至 gemini-1.5-flash-8b (備用方案): {e}")
-            # 如果第一個失敗，嘗試第二個模型
-            response = client.models.generate_content(
-                model="gemini-1.5-flash-8b", 
-                contents=prompt
-            )
-        
-        return response.text.replace("```html", "").replace("```", "")
+        # === 三重保險機制 ===
+        # 策略：先試最新的 -> 再試精確版號 -> 最後試舊版
+        models_to_try = [
+            "gemini-1.5-flash",          # 最新版別名
+            "gemini-1.5-flash-001",      # 精確版號 (較少出錯)
+            "gemini-1.5-flash-8b",       # 輕量版
+            "gemini-1.5-pro",            # 專業版
+            "gemini-2.0-flash-exp",      # 實驗版
+            "gemini-pro"                 # 舊版 (最後防線)
+        ]
+
+        for model_name in models_to_try:
+            try:
+                print(f"嘗試使用模型: {model_name} ...")
+                response = client.models.generate_content(
+                    model=model_name,
+                    contents=prompt
+                )
+                print(f"成功使用 {model_name} 生成內容！")
+                return response.text.replace("```html", "").replace("```", "")
+            except Exception as e:
+                print(f"模型 {model_name} 失敗: {e}")
+                continue # 繼續試下一個
+
+        # 如果全部都失敗
+        return "<p>⚠️ 所有 AI 模型皆暫時無法連線。請稍後再試。</p>"
         
     except Exception as e:
-        print(f"所有 AI 模型皆失敗: {e}")
-        return f"<p>⚠️ AI 暫時無法出題 (Error: {str(e)})<br>請先閱讀下方新聞。</p>"
+        print(f"AI 程式執行錯誤: {e}")
+        return f"<p>⚠️ AI 系統錯誤 ({str(e)})</p>"
 
 def fetch_news():
     cards_html = ""
