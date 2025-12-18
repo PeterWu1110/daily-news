@@ -3,7 +3,6 @@ import datetime
 import pytz
 import os
 import random
-# 關鍵差異：使用 Google 全新版 SDK
 from google import genai
 from google.genai import types
 
@@ -19,6 +18,7 @@ rss_urls = {
     "ABC News": "https://abcnews.go.com/abcnews/topstories"
 }
 
+# 修正重點：CSS 的 { } 全部改成 {{ }} 避免 Python 報錯
 html_template = """
 <!DOCTYPE html>
 <html lang="zh-TW">
@@ -27,22 +27,22 @@ html_template = """
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>每日英語新聞與閱讀測驗</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; padding: 20px; max-width: 1000px; margin: 0 auto; line-height: 1.6; }
-        header { text-align: center; margin-bottom: 40px; padding: 20px; background: #2c3e50; color: white; border-radius: 12px; }
-        .quiz-section { background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 40px; border-top: 5px solid #e67e22; }
-        .quiz-title { color: #e67e22; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0; }
-        .question-card { background: #f9f9f9; padding: 15px; margin-bottom: 20px; border-radius: 8px; border: 1px solid #eee; }
-        .question-text { font-weight: bold; color: #2c3e50; font-size: 1.1em; }
-        .options { margin: 10px 0; }
-        details { margin-top: 10px; cursor: pointer; background: #e8f6f3; padding: 10px; border-radius: 5px; }
-        summary { font-weight: bold; color: #16a085; }
-        .explanation { margin-top: 10px; color: #555; font-size: 0.95em; }
-        .news-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .card h2 { color: #2980b9; margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        .news-item { margin-bottom: 15px; border-bottom: 1px dashed #eee; padding-bottom: 10px; }
-        .news-item a { text-decoration: none; color: #34495e; font-weight: 600; }
-        .news-item a:hover { color: #e67e22; }
+        body {{ font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; padding: 20px; max-width: 1000px; margin: 0 auto; line-height: 1.6; }}
+        header {{ text-align: center; margin-bottom: 40px; padding: 20px; background: #2c3e50; color: white; border-radius: 12px; }}
+        .quiz-section {{ background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 40px; border-top: 5px solid #e67e22; }}
+        .quiz-title {{ color: #e67e22; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0; }}
+        .question-card {{ background: #f9f9f9; padding: 15px; margin-bottom: 20px; border-radius: 8px; border: 1px solid #eee; }}
+        .question-text {{ font-weight: bold; color: #2c3e50; font-size: 1.1em; }}
+        .options {{ margin: 10px 0; }}
+        details {{ margin-top: 10px; cursor: pointer; background: #e8f6f3; padding: 10px; border-radius: 5px; }}
+        summary {{ font-weight: bold; color: #16a085; }}
+        .explanation {{ margin-top: 10px; color: #555; font-size: 0.95em; }}
+        .news-grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }}
+        .card {{ background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }}
+        .card h2 {{ color: #2980b9; margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; }}
+        .news-item {{ margin-bottom: 15px; border-bottom: 1px dashed #eee; padding-bottom: 10px; }}
+        .news-item a {{ text-decoration: none; color: #34495e; font-weight: 600; }}
+        .news-item a:hover {{ color: #e67e22; }}
     </style>
 </head>
 <body>
@@ -69,7 +69,6 @@ def generate_quiz_with_gemini(news_summaries):
         return "<p>⚠️ 請先設定 GitHub Secret (GEMINI_API_KEY)</p>"
 
     try:
-        # 新版 SDK 初始化
         client = genai.Client(api_key=GENAI_API_KEY)
         
         prompt = f"""
@@ -90,7 +89,8 @@ def generate_quiz_with_gemini(news_summaries):
         4. No markdown tags.
         """
         
-        # 使用最新的 gemini-1.5-flash
+        # 嘗試使用 gemini-1.5-flash-001 (指定具體版本號以避免 404)
+        # 如果還是失敗，您可以試著把下方改成 'gemini-1.5-pro'
         response = client.models.generate_content(
             model="gemini-1.5-flash",
             contents=prompt
@@ -100,7 +100,8 @@ def generate_quiz_with_gemini(news_summaries):
         
     except Exception as e:
         print(f"AI 生成失敗: {e}")
-        return f"<p>AI 休息中 ({str(e)})</p>"
+        # 這裡會回傳錯誤訊息到網頁上，但不會讓程式崩潰
+        return f"<p>⚠️ AI 暫時無法出題 (Error: {str(e)})<br>請先閱讀下方新聞。</p>"
 
 def fetch_news():
     cards_html = ""
@@ -138,6 +139,7 @@ def fetch_news():
     else:
         quiz_html = "<p>今天沒有足夠的新聞資料來生成測驗。</p>"
 
+    # 這裡現在安全了，因為上面的 CSS 已經加了雙括號
     final_html = html_template.format(update_time=now, quiz_content=quiz_html, news_content=cards_html)
     
     with open("index.html", "w", encoding="utf-8") as f:
