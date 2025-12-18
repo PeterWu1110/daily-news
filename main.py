@@ -18,7 +18,6 @@ rss_urls = {
     "ABC News": "https://abcnews.go.com/abcnews/topstories"
 }
 
-# 修正重點：CSS 的 { } 全部改成 {{ }} 避免 Python 報錯
 html_template = """
 <!DOCTYPE html>
 <html lang="zh-TW">
@@ -89,18 +88,25 @@ def generate_quiz_with_gemini(news_summaries):
         4. No markdown tags.
         """
         
-        # 嘗試使用 gemini-1.5-flash-001 (指定具體版本號以避免 404)
-        # 如果還是失敗，您可以試著把下方改成 'gemini-1.5-pro'
-        response = client.models.generate_content(
-            model="gemini-1.5-flash",
-            contents=prompt
-        )
+        # === 雙重保險機制 ===
+        try:
+            print("嘗試使用 gemini-1.5-flash...")
+            response = client.models.generate_content(
+                model="gemini-1.5-flash",
+                contents=prompt
+            )
+        except Exception as e:
+            print(f"Flash 模型失敗，切換至 gemini-1.5-flash-8b (備用方案): {e}")
+            # 如果第一個失敗，嘗試第二個模型
+            response = client.models.generate_content(
+                model="gemini-1.5-flash-8b", 
+                contents=prompt
+            )
         
         return response.text.replace("```html", "").replace("```", "")
         
     except Exception as e:
-        print(f"AI 生成失敗: {e}")
-        # 這裡會回傳錯誤訊息到網頁上，但不會讓程式崩潰
+        print(f"所有 AI 模型皆失敗: {e}")
         return f"<p>⚠️ AI 暫時無法出題 (Error: {str(e)})<br>請先閱讀下方新聞。</p>"
 
 def fetch_news():
@@ -139,7 +145,6 @@ def fetch_news():
     else:
         quiz_html = "<p>今天沒有足夠的新聞資料來生成測驗。</p>"
 
-    # 這裡現在安全了，因為上面的 CSS 已經加了雙括號
     final_html = html_template.format(update_time=now, quiz_content=quiz_html, news_content=cards_html)
     
     with open("index.html", "w", encoding="utf-8") as f:
