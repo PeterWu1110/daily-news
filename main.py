@@ -3,8 +3,8 @@ import datetime
 import pytz
 import os
 import random
-from google import genai
-from google.genai import types
+import requests # 改用這個基礎套件
+import json
 
 # =================設定區=================
 GENAI_API_KEY = os.environ.get("GEMINI_API_KEY")
@@ -42,7 +42,6 @@ html_template = """
         .news-item {{ margin-bottom: 15px; border-bottom: 1px dashed #eee; padding-bottom: 10px; }}
         .news-item a {{ text-decoration: none; color: #34495e; font-weight: 600; }}
         .news-item a:hover {{ color: #e67e22; }}
-        .debug-info {{ font-size: 0.8em; color: #999; margin-top: 10px; }}
     </style>
 </head>
 <body>
@@ -64,71 +63,58 @@ html_template = """
 </html>
 """
 
-def generate_quiz_with_gemini(news_summaries):
+def call_gemini_api(news_text):
     if not GENAI_API_KEY:
-        return "<p>⚠️ 請先設定 GitHub Secret (GEMINI_API_KEY)</p>"
+        return None, "錯誤：找不到 API Key，請檢查 GitHub Secrets。"
+
+    # 直接使用 HTTP 請求，繞過所有套件版本問題
+    # 我們嘗試最標準的 v1beta 接口
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GENAI_API_KEY}"
+    
+    headers = {'Content-Type': 'application/json'}
+    
+    prompt_text = f"""
+    You are an English teacher. Based on the following news summaries, create 5 multiple-choice reading comprehension questions.
+    
+    NEWS DATA:
+    {news_text}
+    
+    REQUIREMENTS:
+    1. Create 5 questions.
+    2. Format output as raw HTML only (no markdown).
+    3. HTML Structure for each question:
+       <div class="question-card">
+           <div class="question-text">Question: ...</div>
+           <div class="options">A)... B)... C)... D)...</div>
+           <details><summary>Check Answer</summary><div class="explanation">...</div></details>
+       </div>
+    """
+
+    data = {
+        "contents": [{
+            "parts": [{"text": prompt_text}]
+        }]
+    }
 
     try:
-        client = genai.Client(api_key=GENAI_API_KEY)
+        response = requests.post(url, headers=headers, json=data)
         
-        # --- 偵錯區塊：列出所有可用模型 (會顯示在 GitHub Actions 的 Log 中) ---
-        print("=== DEBUG: Checking Available Models ===")
-        try:
-            for m in client.models.list():
-                print(f"Available model: {m.name}")
-        except Exception as e:
-            print(f"List models failed: {e}")
-        print("=== End DEBUG ===")
-        # -----------------------------------------------------------
-
-        prompt = f"""
-        You are an English teacher. Based on the following news summaries, create 5 multiple-choice reading comprehension questions.
-        
-        NEWS DATA:
-        {news_summaries}
-        
-        REQUIREMENTS:
-        1. Create 5 questions.
-        2. Format output as raw HTML only.
-        3. Structure:
-           <div class="question-card">
-               <div class="question-text">Question: ...</div>
-               <div class="options">A)... B)... C)... D)...</div>
-               <details><summary>Check Answer</summary><div class="explanation">...</div></details>
-           </div>
-        4. No markdown tags.
-        """
-        
-        # === 三重保險機制 ===
-        # 策略：先試最新的 -> 再試精確版號 -> 最後試舊版
-        models_to_try = [
-            "gemini-1.5-flash",          # 最新版別名
-            "gemini-1.5-flash-001",      # 精確版號 (較少出錯)
-            "gemini-1.5-flash-8b",       # 輕量版
-            "gemini-1.5-pro",            # 專業版
-            "gemini-2.0-flash-exp",      # 實驗版
-            "gemini-pro"                 # 舊版 (最後防線)
-        ]
-
-        for model_name in models_to_try:
+        # 檢查是否成功 (HTTP 200)
+        if response.status_code == 200:
+            result = response.json()
+            # 解析回傳的文字
             try:
-                print(f"嘗試使用模型: {model_name} ...")
-                response = client.models.generate_content(
-                    model=model_name,
-                    contents=prompt
-                )
-                print(f"成功使用 {model_name} 生成內容！")
-                return response.text.replace("```html", "").replace("```", "")
-            except Exception as e:
-                print(f"模型 {model_name} 失敗: {e}")
-                continue # 繼續試下一個
-
-        # 如果全部都失敗
-        return "<p>⚠️ 所有 AI 模型皆暫時無法連線。請稍後再試。</p>"
-        
+                answer = result['candidates'][0]['content']['parts'][0]['text']
+                # 清理 markdown 標記
+                return answer.replace("```html", "").replace("```", ""), None
+            except (KeyError, IndexError):
+                return None, f"AI 回傳格式不如預期: {result}"
+        else:
+            # 如果失敗，回傳詳細錯誤訊息
+            return None, f"API 請求失敗 (Code {response.status_code}): {response.text}"
+            
     except Exception as e:
-        print(f"AI 程式執行錯誤: {e}")
-        return f"<p>⚠️ AI 系統錯誤 ({str(e)})</p>"
+        return None, f"連線發生錯誤: {str(e)}"
 
 def fetch_news():
     cards_html = ""
@@ -159,10 +145,19 @@ def fetch_news():
         except Exception as e:
             print(f"Error {source}: {e}")
 
-    print("正在請求 Gemini AI 出題...")
+    # --- 呼叫 AI ---
+    print("正在請求 Gemini AI 出題 (使用 HTTP Mode)...")
+    
     if all_news_for_quiz:
         selected_news = random.sample(all_news_for_quiz, min(len(all_news_for_quiz), 8))
-        quiz_html = generate_quiz_with_gemini("\n".join(selected_news))
+        news_text = "\n".join(selected_news)
+        
+        quiz_html, error_msg = call_gemini_api(news_text)
+        
+        if error_msg:
+            # 如果主要模型失敗，網頁上顯示錯誤，方便除錯
+            print(error_msg)
+            quiz_html = f"<p>⚠️ {error_msg}</p>"
     else:
         quiz_html = "<p>今天沒有足夠的新聞資料來生成測驗。</p>"
 
